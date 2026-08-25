@@ -1,0 +1,751 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap');
+    body { margin: 0; background: #FAF7F2; color: #2A2320;
+           font-family: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+           -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+    a { color: #C06A22; text-decoration: none; }
+    a:hover { color: #965014; }
+    .dsp { font-family: 'Outfit', system-ui, -apple-system, sans-serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.09em;
+           text-transform: uppercase; color: #9A8F86; }
+    .th { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+          color: #9A8F86; text-align: left; padding: 0 14px 10px 14px; }
+    .td { padding: 13px 14px; border-top: 1px solid #F0EAE1; font-size: 13.5px;
+          color: #2A2320; vertical-align: middle; }
+    .pill { display: inline-block; padding: 5px 11px; border-radius: 999px;
+            font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
+      border-radius: 999px; background: #E7DFD4; outline: none; margin: 10px 0 0 0; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none;
+      width: 20px; height: 20px; border-radius: 999px; background: #FFFFFF;
+      border: 1.5px solid #E0D6C8; box-shadow: 0 1px 3px rgba(42,35,32,0.18); cursor: pointer; }
+    input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 999px;
+      background: #FFFFFF; border: 1.5px solid #E0D6C8;
+      box-shadow: 0 1px 3px rgba(42,35,32,0.18); cursor: pointer; }
+  </style>
+</helmet>
+
+<div style="display: flex; align-items: stretch; min-height: 100%; background: #FAF7F2">
+
+  <aside style="width: 320px; flex-shrink: 0; background: #F5F1EA; border-right: 1px solid #EBE4DA; padding: 34px 26px 40px 30px; display: flex; flex-direction: column; gap: 26px">
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0">
+        <circle cx="12" cy="12" r="10.2" stroke="{{ accent }}" stroke-width="1.5" opacity="0.32"></circle>
+        <path d="M5 15.5 C 9 15.5, 9 8.5, 13 8.5 L 19.4 8.5" stroke="{{ accent }}" stroke-width="1.9" stroke-linecap="round"></path>
+        <path d="M5 15.5 L 19.4 15.5" stroke="#2A2320" stroke-width="1.9" stroke-linecap="round" opacity="0.24"></path>
+        <circle cx="19.4" cy="8.5" r="2.1" fill="{{ accent }}"></circle>
+      </svg>
+      <div>
+        <div class="dsp" style="font-size: 16.5px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.15">Triage Engine</div>
+        <div style="font-size: 11.5px; color: #8C817A; margin-top: 2px">Alzheimer's diagnostic pathways</div>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 16px; padding: 16px 17px">
+      <div class="lbl">Risk engine</div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 9px">
+        <div style="width: 7px; height: 7px; border-radius: 999px; background: #4E8A62; flex-shrink: 0"></div>
+        <div class="dsp" style="font-size: 14.5px; font-weight: 600">HistGradientBoosting</div>
+      </div>
+      <div style="font-size: 11.8px; line-height: 1.5; color: #8C817A; margin-top: 8px">TabPFN not installed — sklearn fallback active. Ingests NaN natively, so no row is imputed or dropped.</div>
+    </div>
+
+    <div>
+      <div class="lbl" style="margin-bottom: 4px">Monthly capacity</div>
+
+      <div style="margin-top: 18px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 13px; font-weight: 600">PET slots</span>
+          <span class="dsp num" style="font-size: 15px; font-weight: 700; color: {{ accent }}">{{ cap.pet }}</span>
+        </div>
+        <input type="range" min="0" max="100" step="1" value="{{ cap.pet }}" onChange="{{ ui.setPet }}">
+      </div>
+
+      <div style="margin-top: 20px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 13px; font-weight: 600">MRI slots</span>
+          <span class="dsp num" style="font-size: 15px; font-weight: 700; color: {{ accent }}">{{ cap.mri }}</span>
+        </div>
+        <input type="range" min="0" max="200" step="1" value="{{ cap.mri }}" onChange="{{ ui.setMri }}">
+      </div>
+
+      <div style="margin-top: 20px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 13px; font-weight: 600">Blood p-tau217</span>
+          <span class="dsp num" style="font-size: 15px; font-weight: 700; color: {{ accent }}">{{ cap.blood }}</span>
+        </div>
+        <input type="range" min="0" max="400" step="1" value="{{ cap.blood }}" onChange="{{ ui.setBlood }}">
+      </div>
+    </div>
+
+    <div style="background: #FDF3E3; border: 1px solid #F0DDBB; border-radius: 16px; padding: 15px 16px">
+      <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #8A5A16">Label caveat</div>
+      <div style="font-size: 11.8px; line-height: 1.55; color: #74551F; margin-top: 7px">Training label is <strong>CDR &gt; 0</strong> — itself a clinician's rating, so the target is partly circular. Prospective validation would use conversion to AD over follow-up, not a concurrent scale.</div>
+    </div>
+
+    <div style="font-size: 11.3px; line-height: 1.55; color: #9A8F86; border-top: 1px solid #E7DFD4; padding-top: 15px">
+      <strong style="color: #6B615A">Simulated fields:</strong> APOE4, hypertension, diabetes and p-tau217 values are generated (seed 42) and marked <em>sim</em> wherever they appear. Sensitivity, specificity and cost figures are published-literature estimates, not measured here.
+    </div>
+
+    <button style="margin-top: auto; width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #E0D6C8; background: #FFFFFF; color: #2A2320; font-family: 'Public Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3.5 L12 15.2 M7.4 10.8 L12 15.4 L16.6 10.8" stroke="#6B615A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M4.5 18.6 L19.5 18.6" stroke="#6B615A" stroke-width="1.9" stroke-linecap="round"></path>
+      </svg>
+      Export figures — 150 dpi
+    </button>
+  </aside>
+
+  <main style="flex-grow: 1; padding: 34px 44px 56px 44px; position: relative; overflow: hidden">
+
+    <div style="position: absolute; top: -190px; right: -140px; width: 520px; height: 520px; border-radius: 999px; background: radial-gradient(circle at 50% 50%, rgba(232,133,60,0.13), rgba(232,133,60,0) 68%); pointer-events: none"></div>
+
+    <div style="position: relative; display: flex; flex-direction: column; gap: 22px">
+
+      <div style="display: flex; align-items: center; gap: 12px; background: #FDF3E3; border: 1px solid #F0DDBB; border-radius: 14px; padding: 13px 18px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0">
+          <path d="M12 4.6 L20.6 19.4 L3.4 19.4 Z" stroke="#B87A1E" stroke-width="1.8" stroke-linejoin="round"></path>
+          <path d="M12 10 L12 14.1" stroke="#B87A1E" stroke-width="1.9" stroke-linecap="round"></path>
+          <circle cx="12" cy="16.6" r="0.95" fill="#B87A1E"></circle>
+        </svg>
+        <span style="font-size: 13.2px; color: #8A5A16"><strong>Running on synthetic cohort.</strong> Swap in <span style="font-family: ui-monospace, monospace; font-size: 12.4px">oasis_longitudinal.csv</span> for real data — schema and column names are identical.</span>
+      </div>
+
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-top: 4px">
+        <div>
+          <h1 class="dsp" style="margin: 0; font-size: 33px; font-weight: 700; letter-spacing: -0.028em; line-height: 1.1">This month's triage plan</h1>
+          <p style="margin: 9px 0 0 0; font-size: 14.5px; color: #6B615A; max-width: 640px; line-height: 1.5">{{ cohort.n }} patients screened. Each one gets a <em>next action</em> — which test to order, or release to monitoring.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 9px; background: #EDF4EF; border: 1px solid #D6E5DB; border-radius: 999px; padding: 9px 16px; flex-shrink: 0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3.6 L19.6 6.6 V12 c0 4.6 -3.1 7.5 -7.6 8.8 C7.5 19.5 4.4 16.6 4.4 12 V6.6 Z" stroke="#4E8A62" stroke-width="1.7" stroke-linejoin="round"></path>
+            <path d="M8.9 12.1 L11.2 14.3 L15.3 9.9" stroke="#4E8A62" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span style="font-size: 12.6px; font-weight: 600; color: #37624A">No diagnosis is produced anywhere on this screen</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 4px">
+        <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
+          <div style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 20px; padding: 22px 22px 20px 22px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 14px 30px -22px rgba(42,35,32,0.22)">
+            <div class="lbl">{{ m.label }}</div>
+            <div class="dsp num" style="font-size: 38px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.08; margin-top: 12px; color: {{ m.color }}">{{ m.value }}</div>
+            <div style="font-size: 12.2px; color: #8C817A; margin-top: 7px; line-height: 1.45">{{ m.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <section style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 22px; padding: 26px 28px 28px 28px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 14px 30px -22px rgba(42,35,32,0.22)">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px">
+          <div>
+            <h2 class="dsp" style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.018em">Modality coverage</h2>
+            <p style="margin: 7px 0 0 0; font-size: 13.2px; color: #6B615A; max-width: 620px; line-height: 1.5">{{ cov.caption }}</p>
+          </div>
+          <div style="display: flex; gap: 16px; flex-shrink: 0; padding-top: 4px">
+            <div style="display: flex; align-items: center; gap: 7px">
+              <div style="width: 13px; height: 13px; border-radius: 4px; background: {{ accent }}"></div>
+              <span style="font-size: 11.8px; color: #6B615A">on file</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 7px">
+              <div style="width: 13px; height: 13px; border-radius: 4px; background: #F1EBE2; border: 1px solid #E7DFD4"></div>
+              <span style="font-size: 11.8px; color: #6B615A">missing</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px; margin-top: 22px">
+          <sc-for list="{{ cov.blocks }}" as="blk" hint-placeholder-count="2">
+            <div>
+              <div style="display: grid; grid-template-columns: 74px repeat(4, minmax(0, 1fr)); gap: 5px; align-items: end; margin-bottom: 7px">
+                <div></div>
+                <sc-for list="{{ cov.heads }}" as="h" hint-placeholder-count="4">
+                  <div style="font-size: 9.6px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #9A8F86; text-align: center">{{ h }}</div>
+                </sc-for>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px">
+                <sc-for list="{{ blk.rows }}" as="row" hint-placeholder-count="20">
+                  <div style="display: grid; grid-template-columns: 74px repeat(4, minmax(0, 1fr)); gap: 5px; align-items: center">
+                    <div class="num" style="font-size: 10.2px; color: #A79C93">{{ row.id }}</div>
+                    <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="4">
+                      <div style="{{ c.st }}"></div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 22px; padding: 26px 28px 30px 28px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 14px 30px -22px rgba(42,35,32,0.22)">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px">
+          <div>
+            <h2 class="dsp" style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.018em">Can this test change what we do?</h2>
+            <p style="margin: 7px 0 0 0; font-size: 13.2px; color: #6B615A; max-width: 660px; line-height: 1.5">A test earns its slot only when a positive and a negative result land on <em>opposite</em> sides of the escalation threshold. If both land on the same side, the result cannot move the plan — so the scan is spend without a decision.</p>
+          </div>
+          <div style="text-align: right; flex-shrink: 0">
+            <div class="lbl">Threshold &theta;</div>
+            <div class="dsp num" style="font-size: 26px; font-weight: 700; letter-spacing: -0.03em; margin-top: 4px">{{ thetaLabel }}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px">
+          <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="6">
+            <div onClick="{{ ch.pick }}" style="{{ ch.st }}">
+              <span class="num">{{ ch.id }}</span>
+              <span class="num" style="opacity: 0.62; margin-left: 7px">{{ ch.p }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 18px; margin-top: 24px; padding: 16px 20px; background: #FAF7F2; border-radius: 16px">
+          <div>
+            <div class="lbl">Selected</div>
+            <div class="dsp num" style="font-size: 20px; font-weight: 700; margin-top: 3px">{{ sel.id }}</div>
+          </div>
+          <div style="width: 1px; height: 40px; background: #E7DFD4"></div>
+          <div>
+            <div class="lbl">Risk estimate</div>
+            <div class="dsp num" style="font-size: 20px; font-weight: 700; margin-top: 3px">{{ sel.pStr }} <span style="font-size: 13px; font-weight: 500; color: #8C817A">&plusmn; {{ sel.uStr }}</span></div>
+          </div>
+          <div style="width: 1px; height: 40px; background: #E7DFD4"></div>
+          <div>
+            <div class="lbl">Modalities on file</div>
+            <div class="dsp" style="font-size: 20px; font-weight: 700; margin-top: 3px">{{ sel.modStr }}</div>
+          </div>
+          <div style="width: 1px; height: 40px; background: #E7DFD4"></div>
+          <div style="flex-grow: 1">
+            <div class="lbl">Recommended action</div>
+            <div style="margin-top: 6px"><span class="pill" style="{{ sel.actSt }}">{{ sel.actLabel }}</span></div>
+          </div>
+        </div>
+
+        <div style="margin: 28px 0 0 148px; position: relative; height: 22px">
+          <div style="position: absolute; left: {{ thetaPct }}; top: 0; transform: translateX(-50%); font-size: 12px; font-weight: 700; color: #C9532F; white-space: nowrap">&theta; = {{ thetaLabel }} &middot; escalate</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 6px">
+          <sc-for list="{{ flipRows }}" as="t" hint-placeholder-count="3">
+            <div style="{{ t.rowSt }}">
+              <div style="width: 132px; flex-shrink: 0; padding-right: 16px">
+                <div class="dsp" style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: {{ t.nameColor }}">{{ t.name }}</div>
+                <div class="num" style="font-size: 11.4px; color: #9A8F86; margin-top: 3px">{{ t.meta }}</div>
+              </div>
+
+              <div style="flex-grow: 1; position: relative; height: 58px">
+                <div style="position: absolute; left: 0; right: 0; top: 28px; height: 2px; background: #EFE9E0; border-radius: 999px"></div>
+                <div style="position: absolute; left: {{ thetaPct }}; top: 6px; bottom: 6px; width: 2px; background: #C9532F; opacity: 0.55"></div>
+                <div style="position: absolute; left: {{ t.barLeft }}; width: {{ t.barWidth }}; top: 25px; height: 8px; border-radius: 999px; background: {{ t.barColor }}"></div>
+
+                <div style="position: absolute; left: {{ t.negLeft }}; top: 20px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center">
+                  <div style="width: 18px; height: 18px; border-radius: 999px; background: #FFFFFF; border: 3px solid {{ t.negColor }}"></div>
+                  <div class="num" style="font-size: 11.6px; font-weight: 700; color: {{ t.negColor }}; margin-top: 5px; white-space: nowrap">{{ t.negLabel }}</div>
+                </div>
+                <div style="position: absolute; left: {{ t.posLeft }}; top: 20px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center">
+                  <div style="width: 18px; height: 18px; border-radius: 999px; background: {{ t.posColor }}; border: 3px solid {{ t.posColor }}"></div>
+                  <div class="num" style="font-size: 11.6px; font-weight: 700; color: {{ t.posColor }}; margin-top: 5px; white-space: nowrap">{{ t.posLabel }}</div>
+                </div>
+                <div style="position: absolute; left: {{ nowLeft }}; top: 1px; transform: translateX(-50%); width: 1px; height: 20px; background: #2A2320; opacity: 0.28"></div>
+              </div>
+
+              <div style="width: 218px; flex-shrink: 0; padding-left: 18px; text-align: right">
+                <span class="pill" style="{{ t.badgeSt }}">{{ t.badge }}</span>
+                <div style="font-size: 11.4px; color: #9A8F86; margin-top: 6px; line-height: 1.4">{{ t.note }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 18px; border-top: 1px solid #F0EAE1; gap: 20px">
+          <div style="display: flex; align-items: center; gap: 22px">
+            <div style="display: flex; align-items: center; gap: 8px">
+              <div style="width: 14px; height: 14px; border-radius: 999px; background: #FFFFFF; border: 3px solid #6B615A"></div>
+              <span style="font-size: 12px; color: #6B615A">risk if result is negative</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px">
+              <div style="width: 14px; height: 14px; border-radius: 999px; background: #6B615A"></div>
+              <span style="font-size: 12px; color: #6B615A">risk if result is positive</span>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: #8C817A">Bayesian update from published sensitivity / specificity. Amyloid PET stays available for treatment-eligibility confirmation regardless of flip.</div>
+        </div>
+      </section>
+
+      <section style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 22px; padding: 26px 4px 10px 4px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 14px 30px -22px rgba(42,35,32,0.22)">
+        <div style="padding: 0 24px">
+          <h2 class="dsp" style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.018em">Work queue, ranked by information value</h2>
+          <p style="margin: 7px 0 0 0; font-size: 13.2px; color: #6B615A; max-width: 720px; line-height: 1.5">Ranked by <span class="num">P(result flips the action) &times; &#8377;2,50,000 &divide; test cost</span> — not by risk. That is why a lower-risk patient can sit above a higher-risk one.</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
+          <thead>
+            <tr>
+              <th class="th" style="width: 44px; text-align: right">#</th>
+              <th class="th">Patient</th>
+              <th class="th">Risk (&plusmn; spread)</th>
+              <th class="th">Modalities</th>
+              <th class="th">Next action</th>
+              <th class="th" style="width: 300px">Why</th>
+              <th class="th" style="text-align: right">Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ queue }}" as="q" hint-placeholder-count="8">
+              <tr style="{{ q.rowSt }}">
+                <td class="td num" style="text-align: right; color: #A79C93; font-weight: 600">{{ q.rank }}</td>
+                <td class="td num" style="font-weight: 700">{{ q.id }}</td>
+                <td class="td">
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <div style="width: 68px; height: 6px; border-radius: 999px; background: #F1EBE2; position: relative; flex-shrink: 0">
+                      <div style="position: absolute; left: {{ q.uLeft }}; width: {{ q.uWidth }}; top: 0; height: 6px; border-radius: 999px; background: #DCD3C7"></div>
+                      <div style="position: absolute; left: {{ q.pLeft }}; top: -2px; width: 3px; height: 10px; border-radius: 2px; background: {{ q.pColor }}"></div>
+                    </div>
+                    <span class="num" style="font-weight: 700">{{ q.pStr }}</span>
+                    <span class="num" style="color: #A79C93; font-size: 12px">&plusmn; {{ q.uStr }}</span>
+                  </div>
+                </td>
+                <td class="td">
+                  <div style="display: flex; gap: 4px">
+                    <sc-for list="{{ q.mods }}" as="mm" hint-placeholder-count="4">
+                      <div style="{{ mm.st }}">{{ mm.k }}</div>
+                    </sc-for>
+                  </div>
+                </td>
+                <td class="td"><span class="pill" style="{{ q.actSt }}">{{ q.actLabel }}</span></td>
+                <td class="td" style="color: #6B615A; font-size: 12.6px; line-height: 1.45">{{ q.why }}</td>
+                <td class="td num" style="text-align: right; font-weight: 600; color: {{ q.costColor }}">{{ q.cost }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </section>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 20px">
+
+        <section style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 22px; padding: 26px 28px 28px 28px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 14px 30px -22px rgba(42,35,32,0.22)">
+          <h2 class="dsp" style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.018em">Same capacity, two policies</h2>
+          <p style="margin: 7px 0 0 0; font-size: 13.2px; color: #6B615A; line-height: 1.5">Naive fills PET from the top of the risk list. Ours fills by information value, under the flip filter.</p>
+
+          <div style="display: grid; grid-template-columns: 1.35fr 1fr 1fr 0.95fr; gap: 0; margin-top: 22px">
+            <div></div>
+            <div style="text-align: center; padding-bottom: 12px"><span class="lbl">Naive</span></div>
+            <div style="text-align: center; padding-bottom: 12px"><span class="lbl" style="color: {{ accent }}">Ours</span></div>
+            <div style="text-align: right; padding-bottom: 12px"><span class="lbl">&Delta;</span></div>
+
+            <sc-for list="{{ policy }}" as="row" hint-placeholder-count="5">
+              <div style="padding: 13px 0; border-top: 1px solid #F0EAE1; font-size: 13.2px; color: #6B615A">{{ row.k }}</div>
+              <div class="dsp num" style="padding: 13px 0; border-top: 1px solid #F0EAE1; text-align: center; font-size: 17px; font-weight: 600; color: #8C817A">{{ row.a }}</div>
+              <div class="dsp num" style="padding: 13px 0; border-top: 1px solid #F0EAE1; text-align: center; font-size: 17px; font-weight: 700">{{ row.b }}</div>
+              <div class="dsp num" style="padding: 13px 0; border-top: 1px solid #F0EAE1; text-align: right; font-size: 14px; font-weight: 700; color: {{ row.dColor }}">{{ row.d }}</div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top: 18px; padding: 14px 16px; background: #FAF7F2; border-radius: 14px; font-size: 12.4px; color: #6B615A; line-height: 1.5">Naive scans a higher share of amyloid-positive patients — and that is precisely the problem. It spends PET on people whose plan was never in doubt.</div>
+        </section>
+
+        <section style="background: {{ equity.bg }}; border: 1px solid {{ equity.border }}; border-radius: 22px; padding: 26px 26px 28px 26px">
+          <div style="display: flex; align-items: center; gap: 9px">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0">
+              <path d="M12 4.2 L12 19.6 M6.2 7.1 L17.8 7.1 M6.2 7.1 L3.6 13.4 h5.2 Z M17.8 7.1 L15.2 13.4 h5.2 Z" stroke="{{ equity.ink }}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></path>
+            </svg>
+            <h2 class="dsp" style="margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.015em; color: {{ equity.ink }}">Equity guard</h2>
+          </div>
+
+          <div style="display: flex; gap: 26px; margin-top: 20px">
+            <div>
+              <div class="lbl">Low education</div>
+              <div class="dsp num" style="font-size: 27px; font-weight: 700; letter-spacing: -0.03em; margin-top: 5px; color: {{ equity.ink }}">{{ equity.low }}</div>
+              <div style="font-size: 11.4px; color: #8C817A; margin-top: 2px">selected into queue</div>
+            </div>
+            <div>
+              <div class="lbl">High education</div>
+              <div class="dsp num" style="font-size: 27px; font-weight: 700; letter-spacing: -0.03em; margin-top: 5px; color: {{ equity.ink }}">{{ equity.high }}</div>
+              <div style="font-size: 11.4px; color: #8C817A; margin-top: 2px">selected into queue</div>
+            </div>
+          </div>
+
+          <div style="font-size: 12.4px; line-height: 1.55; color: {{ equity.ink }}; margin-top: 18px; padding-top: 16px; border-top: 1px solid {{ equity.border }}">{{ equity.msg }}</div>
+          <div style="font-size: 11.4px; line-height: 1.5; color: #8C817A; margin-top: 12px">Surfaced, never auto-corrected. Silently reweighting the queue would be its own problem — this is a clinician's call to make in the open.</div>
+        </section>
+      </div>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"theta":{"editor":"range","default":0.4,"min":0.05,"max":0.95,"step":0.05,"section":"Engine"},"accent":{"editor":"color","default":"#E8853C","options":["#E8853C","#C9532F","#2C7A9E","#4E8A62"],"section":"Theme"}}'>
+class Component extends DCLogic {
+
+  cohort() {
+    if (this._c) return this._c;
+    var s = 42 >>> 0;
+    var rnd = function () {
+      s = (s + 0x6D2B79F5) >>> 0;
+      var t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    var pts = [];
+    for (var i = 0; i < 40; i++) {
+      var age = Math.round(62 + rnd() * 30);
+      var educ = Math.round(6 + rnd() * 17);
+      var ses = 1 + Math.floor(rnd() * 5);
+      var mmse = Math.round(30 - Math.pow(rnd(), 1.35) * 15);
+      var hasCom = rnd() < 0.60;
+      var hasBlood = rnd() < 0.20;
+      var hasMri = rnd() < 0.35;
+      var ptau = hasBlood ? (0.35 + rnd() * 2.7) : null;
+      var nwbv = hasMri ? (0.655 + rnd() * 0.15) : null;
+      var apoe = hasCom ? (rnd() < 0.32 ? 1 : 0) : 0;
+      var z = -0.34 * (mmse - 26) + 0.052 * (age - 75) - 0.055 * (educ - 14) + 0.17 * (ses - 3);
+      if (hasBlood) z += 1.45 * (ptau - 1.1);
+      if (hasMri) z += -21 * (nwbv - 0.735);
+      if (hasCom && apoe) z += 0.72;
+      var p = 1 / (1 + Math.exp(-z));
+      p = Math.max(0.015, Math.min(0.965, p));
+      var nMod = 1 + (hasCom ? 1 : 0) + (hasBlood ? 1 : 0) + (hasMri ? 1 : 0);
+      var u = (0.030 + 0.049 * (4 - nMod)) * (0.55 + 1.85 * p * (1 - p));
+      u = Math.max(0.012, Math.min(0.30, u));
+      pts.push({
+        id: 'OAS2_' + String(1001 + i * 3),
+        age: age, educ: educ, ses: ses, mmse: mmse,
+        hasCom: hasCom, hasBlood: hasBlood, hasMri: hasMri,
+        p: p, u: u, nMod: nMod
+      });
+    }
+    var us = pts.map(function (x) { return x.u; }).sort(function (a, b) { return b - a; });
+    var cut = us[Math.max(0, Math.floor(us.length * 0.1) - 1)];
+    pts.forEach(function (x) { x.highU = x.u >= cut; });
+    var eds = pts.map(function (x) { return x.educ; }).sort(function (a, b) { return a - b; });
+    var medEduc = eds[Math.floor(eds.length / 2)];
+    pts.forEach(function (x) { x.lowEd = x.educ < medEduc; });
+    this._c = pts;
+    return pts;
+  }
+
+  tests() {
+    return [
+      { key: 'blood', name: 'Blood p-tau217', sens: 0.90, spec: 0.90, cost: 8000, days: 3 },
+      { key: 'mri', name: 'Structural MRI', sens: 0.85, spec: 0.70, cost: 12000, days: 14 },
+      { key: 'pet', name: 'Amyloid PET', sens: 0.95, spec: 0.95, cost: 60000, days: 30 }
+    ];
+  }
+
+  evalTest(p, t, theta) {
+    var lrPos = t.sens / (1 - t.spec);
+    var lrNeg = (1 - t.sens) / t.spec;
+    var o = p / (1 - p);
+    var pp = (o * lrPos) / (1 + o * lrPos);
+    var pn = (o * lrNeg) / (1 + o * lrNeg);
+    var flips = (pp >= theta) !== (pn >= theta);
+    var pPos = p * t.sens + (1 - p) * (1 - t.spec);
+    var pFlip = p < theta ? pPos : (1 - pPos);
+    return { pp: pp, pn: pn, flips: flips, pPos: pPos, iv: pFlip * 250000 / t.cost };
+  }
+
+  plan(theta) {
+    var self = this;
+    var ts = this.tests();
+    return this.cohort().map(function (x) {
+      var ev = {};
+      ts.forEach(function (t) { ev[t.key] = self.evalTest(x.p, t, theta); });
+      var flipping = ts.filter(function (t) { return ev[t.key].flips; });
+      var act, chosen = null;
+      if (flipping.length === 0) {
+        act = x.p >= theta ? 'ESCALATE_NOW' : 'RELEASE_12MO';
+      } else if (x.highU) {
+        act = 'CLINICIAN_REVIEW';
+      } else {
+        act = 'ORDER';
+        chosen = flipping.slice().sort(function (a, b) { return a.cost - b.cost; })[0];
+      }
+      var candidate = x.p >= theta && x.mmse >= 20 && x.age <= 85;
+      var guard = act === 'ESCALATE_NOW' && candidate;
+      return { pt: x, ev: ev, act: act, chosen: chosen, guard: guard,
+               iv: chosen ? ev[chosen.key].iv : (guard ? ev.pet.iv : 0) };
+    });
+  }
+
+  allocate(rows, cap) {
+    var left = { blood: cap.blood, mri: cap.mri, pet: cap.pet };
+    var order = rows.slice().sort(function (a, b) { return b.iv - a.iv; });
+    order.forEach(function (r) {
+      r.granted = false; r.deferred = false;
+      var k = r.chosen ? r.chosen.key : (r.guard ? 'pet' : null);
+      if (!k) return;
+      if (left[k] > 0) { left[k] -= 1; r.granted = true; }
+      else { r.deferred = true; }
+    });
+    return { order: order, left: left };
+  }
+
+  fmtINR(v) {
+    if (v >= 10000000) return '₹' + (v / 10000000).toFixed(2) + ' Cr';
+    if (v >= 100000) return '₹' + (v / 100000).toFixed(1) + ' L';
+    return '₹' + v.toLocaleString('en-IN');
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var theta = this.props.theta == null ? 0.4 : this.props.theta;
+    var accent = this.props.accent || '#E8853C';
+    var cap = {
+      pet: st.pet == null ? 20 : st.pet,
+      mri: st.mri == null ? 60 : st.mri,
+      blood: st.blood == null ? 200 : st.blood
+    };
+    var ts = this.tests();
+    var rows = this.plan(theta);
+    var alloc = this.allocate(rows, cap);
+    var ranked = alloc.order;
+
+    var byRisk = rows.slice().sort(function (a, b) { return b.pt.p - a.pt.p; });
+    var nLeft = { pet: cap.pet, mri: cap.mri, blood: cap.blood };
+    var naiveScans = [];
+    byRisk.forEach(function (r) {
+      ['pet', 'mri', 'blood'].forEach(function (k) {
+        if (nLeft[k] > 0) {
+          nLeft[k] -= 1;
+          naiveScans.push({ r: r, k: k, wasted: !r.ev[k].flips });
+        }
+      });
+    });
+    var costOf = {}; ts.forEach(function (t) { costOf[t.key] = t.cost; });
+    var wasted = naiveScans.filter(function (s) { return s.wasted; });
+    var wastedCost = wasted.reduce(function (a, s) { return a + costOf[s.k]; }, 0);
+
+    var naivePet = naiveScans.filter(function (s) { return s.k === 'pet'; });
+    var oursPet = ranked.filter(function (r) { return r.granted && ((r.chosen && r.chosen.key === 'pet') || (!r.chosen && r.guard)); });
+    var yieldOf = function (list, get) {
+      if (!list.length) return 0;
+      return list.reduce(function (a, x) { return a + get(x); }, 0) / list.length;
+    };
+    var naiveYield = yieldOf(naivePet, function (s) { return s.r.ev.pet.pPos; });
+    var oursYield = yieldOf(oursPet, function (r) { return r.ev.pet.pPos; });
+
+    var oursResolved = ranked.filter(function (r) {
+      return r.act === 'ESCALATE_NOW' || r.act === 'RELEASE_12MO' || r.granted;
+    }).length;
+    var naiveResolved = 0;
+    var seen = {};
+    naiveScans.forEach(function (s) { if (!s.wasted && !seen[s.r.pt.id]) { seen[s.r.pt.id] = 1; naiveResolved += 1; } });
+
+    var petUsed = oursPet.length;
+
+    var metrics = [
+      { label: 'PET slots used', value: petUsed + ' / ' + cap.pet, color: '#2A2320',
+        sub: 'every one of them changes a plan' },
+      { label: 'Wasted scans avoided', value: String(wasted.length), color: accent,
+        sub: 'ordered by naive policy, cannot flip' },
+      { label: 'Spend released', value: this.fmtINR(wastedCost), color: '#4E8A62',
+        sub: 'freed for patients still undecided' },
+      { label: 'Decisions resolved', value: oursResolved + ' / ' + rows.length, color: '#2A2320',
+        sub: 'this month, at current capacity' }
+    ];
+
+    var heads = ['Cog', 'Comorb', 'Blood', 'MRI'];
+    var onSt = 'border-radius: 4px; height: 15px; background: ' + accent;
+    var offSt = 'border-radius: 4px; height: 15px; background: #F1EBE2; border: 1px solid #E7DFD4; box-sizing: border-box';
+    var covRows = this.cohort().map(function (x) {
+      return {
+        id: x.id.replace('OAS2_', '·'),
+        cells: [{ st: onSt },
+                { st: x.hasCom ? onSt : offSt },
+                { st: x.hasBlood ? onSt : offSt },
+                { st: x.hasMri ? onSt : offSt }]
+      };
+    });
+    var complete = this.cohort().filter(function (x) { return x.nMod === 4; }).length;
+    var covBlocks = [{ rows: covRows.slice(0, 20) }, { rows: covRows.slice(20, 40) }];
+
+    var pick = st.sel;
+    if (!pick) {
+      var money = rows.filter(function (r) { return !r.ev.blood.flips && !r.ev.mri.flips && r.ev.pet.flips; })
+                      .sort(function (a, b) { return b.pt.p - a.pt.p; })[0];
+      pick = money ? money.pt.id : rows[0].pt.id;
+    }
+    var selRow = rows.filter(function (r) { return r.pt.id === pick; })[0] || rows[0];
+    var sp = selRow.pt.p;
+
+    var chipsSrc = rows.slice().sort(function (a, b) { return b.pt.p - a.pt.p; })
+                       .filter(function (r, i) { return i % 5 === 0; }).slice(0, 8);
+    var chips = chipsSrc.map(function (r) {
+      var on = r.pt.id === selRow.pt.id;
+      return {
+        id: r.pt.id.replace('OAS2_', ''),
+        p: r.pt.p.toFixed(2),
+        pick: function () { self.setState({ sel: r.pt.id }); },
+        st: 'cursor: pointer; padding: 8px 14px; border-radius: 999px; font-size: 12.4px; font-weight: 600; border: 1px solid ' +
+            (on ? accent : '#E7DFD4') + '; background: ' + (on ? '#FDF1E6' : '#FFFFFF') +
+            '; color: ' + (on ? '#965014' : '#6B615A')
+      };
+    });
+
+    var actMeta = {
+      ESCALATE_NOW: { label: 'Escalate now', fg: '#A8401F', bg: '#FBEDE7' },
+      RELEASE_12MO: { label: 'Re-screen in 12 mo', fg: '#37624A', bg: '#EDF4EF' },
+      CLINICIAN_REVIEW: { label: 'Clinician review', fg: '#5D3E86', bg: '#F1EDF7' },
+      ORDER: { label: 'Order test', fg: '#1F5E7D', bg: '#E9F2F7' }
+    };
+    var labelFor = function (r) {
+      if (r.act === 'ORDER') return 'Order ' + r.chosen.name.toLowerCase();
+      if (r.guard) return 'Escalate now → PET for eligibility';
+      return actMeta[r.act].label;
+    };
+    var pillSt = function (r) {
+      var m = actMeta[r.act];
+      return 'display: inline-block; padding: 5px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: ' + m.fg + '; background: ' + m.bg;
+    };
+
+    var modName = { 1: 'Cognitive only', 2: '2 of 4', 3: '3 of 4', 4: 'All 4' };
+    var sel = {
+      id: selRow.pt.id,
+      pStr: sp.toFixed(2),
+      uStr: selRow.pt.u.toFixed(2),
+      modStr: modName[selRow.pt.nMod],
+      actLabel: labelFor(selRow),
+      actSt: pillSt(selRow)
+    };
+
+    var flipRows = ts.map(function (t) {
+      var e = selRow.ev[t.key];
+      var lo = Math.min(e.pn, e.pp), hi = Math.max(e.pn, e.pp);
+      var fg = e.flips ? '#1F5E7D' : '#A79C93';
+      return {
+        name: t.name,
+        meta: '₹' + t.cost.toLocaleString('en-IN') + ' · ' + t.days + ' days',
+        nameColor: e.flips ? '#2A2320' : '#A79C93',
+        rowSt: 'display: flex; align-items: center; padding: 14px 18px; border-radius: 16px; border: 1px solid ' +
+               (e.flips ? '#D3E4EE' : '#F0EAE1') + '; background: ' + (e.flips ? '#F7FBFD' : '#FCFAF7') +
+               '; opacity: ' + (e.flips ? '1' : '0.72'),
+        barLeft: (lo * 100).toFixed(2) + '%',
+        barWidth: ((hi - lo) * 100).toFixed(2) + '%',
+        barColor: e.flips ? '#BCDCEC' : '#EAE3D9',
+        negLeft: (e.pn * 100).toFixed(2) + '%',
+        posLeft: (e.pp * 100).toFixed(2) + '%',
+        negLabel: e.pn.toFixed(2),
+        posLabel: e.pp.toFixed(2),
+        negColor: fg, posColor: fg,
+        badge: e.flips ? 'This test decides' : 'Cannot change decision',
+        badgeSt: 'display: inline-block; padding: 5px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: ' +
+                 (e.flips ? '#1F5E7D' : '#8B8178') + '; background: ' + (e.flips ? '#E9F2F7' : '#F1EDE7'),
+        note: e.flips
+          ? 'a result either side of θ changes what we do next'
+          : 'both outcomes land on the same side of θ — ₹' + t.cost.toLocaleString('en-IN') + ' and ' + t.days + ' days buy nothing'
+      };
+    });
+
+    var modChip = function (on, k) {
+      return { k: k, st: 'width: 26px; text-align: center; padding: 3px 0; border-radius: 6px; font-size: 9.6px; font-weight: 700; ' +
+        (on ? 'background: ' + accent + '; color: #FFFFFF' : 'background: #F4EFE8; color: #C4BAB0') };
+    };
+    var queue = ranked.slice(0, 9).map(function (r, i) {
+      var x = r.pt;
+      var why;
+      if (r.act === 'ORDER') {
+        why = 'Cheapest test whose result crosses θ. ' + (r.deferred ? 'No slot left this month — rolls forward.' : 'Resolves the decision in ' + r.chosen.days + ' days.');
+      } else if (r.guard) {
+        why = 'Testing cannot move the triage call, but amyloid PET is still required to confirm treatment eligibility.';
+      } else if (r.act === 'ESCALATE_NOW') {
+        why = 'Every available result lands above θ. Further testing delays care without changing it.';
+      } else if (r.act === 'CLINICIAN_REVIEW') {
+        why = 'Spread is in the top decile — ' + modName[x.nMod].toLowerCase() + ' on file. Too thin to act on automatically.';
+      } else {
+        why = 'Every available result lands below θ. Re-screen in 12 months.';
+      }
+      var cost = r.chosen ? r.chosen.cost : (r.guard ? 60000 : 0);
+      var lo = Math.max(0, x.p - x.u), hi = Math.min(1, x.p + x.u);
+      return {
+        rank: i + 1,
+        id: x.id,
+        pStr: x.p.toFixed(2),
+        uStr: x.u.toFixed(2),
+        pLeft: (x.p * 100).toFixed(1) + '%',
+        pColor: x.p >= theta ? '#C9532F' : '#4E8A62',
+        uLeft: (lo * 100).toFixed(1) + '%',
+        uWidth: ((hi - lo) * 100).toFixed(1) + '%',
+        mods: [modChip(true, 'COG'), modChip(x.hasCom, 'CMB'), modChip(x.hasBlood, 'BLD'), modChip(x.hasMri, 'MRI')],
+        actLabel: r.deferred ? labelFor(r) + ' · deferred' : labelFor(r),
+        actSt: r.deferred
+          ? 'display: inline-block; padding: 5px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: #7A7069; background: #F1EDE7'
+          : pillSt(r),
+        why: why,
+        cost: cost ? '₹' + cost.toLocaleString('en-IN') : '—',
+        costColor: cost ? '#2A2320' : '#C4BAB0',
+        rowSt: r.pt.id === selRow.pt.id ? 'background: #FDF9F4' : ''
+      };
+    });
+
+    var pct = function (v) { return (v * 100).toFixed(0) + '%'; };
+    var policy = [
+      { k: 'Decisions resolved', a: String(naiveResolved), b: String(oursResolved),
+        d: (oursResolved - naiveResolved >= 0 ? '+' : '') + (oursResolved - naiveResolved),
+        dColor: oursResolved >= naiveResolved ? '#4E8A62' : '#C9532F' },
+      { k: 'Scans that cannot flip', a: String(wasted.length), b: '0',
+        d: '−' + wasted.length, dColor: '#4E8A62' },
+      { k: 'Spend on those scans', a: this.fmtINR(wastedCost), b: '₹0',
+        d: '−' + this.fmtINR(wastedCost), dColor: '#4E8A62' },
+      { k: 'PET yield (amyloid +)', a: pct(naiveYield), b: pct(oursYield),
+        d: (oursYield - naiveYield >= 0 ? '+' : '−') + pct(Math.abs(oursYield - naiveYield)),
+        dColor: '#8C817A' },
+      { k: 'Decisions per PET scan',
+        a: naivePet.length ? (naivePet.filter(function (s) { return !s.wasted; }).length / naivePet.length).toFixed(2) : '0.00',
+        b: petUsed ? '1.00' : '0.00', d: 'every scan counts', dColor: '#4E8A62' }
+    ];
+
+    var lowAll = rows.filter(function (r) { return r.pt.lowEd; });
+    var hiAll = rows.filter(function (r) { return !r.pt.lowEd; });
+    var rate = function (list) {
+      if (!list.length) return 0;
+      return list.filter(function (r) { return r.granted; }).length / list.length;
+    };
+    var lowR = rate(lowAll), hiR = rate(hiAll);
+    var breach = hiR > 0 && lowR < hiR * 0.8;
+    var equity = {
+      low: pct(lowR), high: pct(hiR),
+      bg: breach ? '#FDF3E3' : '#FFFFFF',
+      border: breach ? '#F0DDBB' : '#EBE4DA',
+      ink: breach ? '#8A5A16' : '#2A2320',
+      msg: breach
+        ? 'Queue may under-serve low-education patients. MMSE is education-biased, and dementia prevalence is higher in this group — 10.29% vs 1.54% (IIPS national study).'
+        : 'Selection rates are within 20% of each other this month. MMSE remains education-biased, so this check runs on every allocation.'
+    };
+
+    return {
+      accent: accent,
+      thetaLabel: theta.toFixed(2),
+      thetaPct: (theta * 100).toFixed(1) + '%',
+      nowLeft: (sp * 100).toFixed(1) + '%',
+      cap: cap,
+      cohort: { n: rows.length },
+      metrics: metrics,
+      cov: {
+        heads: heads, blocks: covBlocks,
+        caption: (rows.length - complete) + ' of ' + rows.length + ' patients have an incomplete record. A model that required complete rows would score only the ' + complete + ' already worked up — and those are exactly the patients a clinician has already decided about.'
+      },
+      chips: chips, sel: sel, flipRows: flipRows,
+      queue: queue, policy: policy, equity: equity,
+      ui: {
+        setPet: function (e) { self.setState({ pet: Number(e.target.value) }); },
+        setMri: function (e) { self.setState({ mri: Number(e.target.value) }); },
+        setBlood: function (e) { self.setState({ blood: Number(e.target.value) }); }
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

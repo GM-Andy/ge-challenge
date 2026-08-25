@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap');
+    body { margin: 0; background: #FAF7F2; color: #2A2320;
+           font-family: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+           -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+    a { color: #C06A22; text-decoration: none; }
+    a:hover { color: #965014; }
+    .dsp { font-family: 'Outfit', system-ui, -apple-system, sans-serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    .lbl { font-size: 12px; font-weight: 600; letter-spacing: 0.09em;
+           text-transform: uppercase; color: #9A8F86; }
+  </style>
+</helmet>
+
+<div style="padding: 46px 52px 48px 52px; position: relative; overflow: hidden; min-height: 100%">
+  <div style="position: absolute; top: -180px; right: -130px; width: 480px; height: 480px; border-radius: 999px; background: radial-gradient(circle at 50% 50%, rgba(232,133,60,0.13), rgba(232,133,60,0) 68%); pointer-events: none"></div>
+
+  <div style="position: relative">
+    <div class="lbl">Data handling</div>
+    <h1 class="dsp" style="margin: 10px 0 0 0; font-size: 40px; font-weight: 700; letter-spacing: -0.032em; line-height: 1.08">The missing cells are<br>the whole point</h1>
+    <p style="margin: 14px 0 0 0; font-size: 15.5px; color: #6B615A; max-width: 720px; line-height: 1.55">Every tile below is one patient; its four quadrants are the four modality blocks. A model that demanded complete rows would score only the {{ s.complete }} patients already worked up — and those are precisely the ones a clinician has already made up their mind about. The other {{ s.incomplete }} are the reason this queue exists.</p>
+
+    <div style="display: flex; gap: 40px; margin-top: 30px; align-items: flex-start">
+
+      <div style="flex-shrink: 0">
+        <div style="display: grid; grid-template-columns: repeat(20, 26px); gap: 5px">
+          <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="60">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1.5px; width: 26px; height: 26px; border-radius: 5px; overflow: hidden">
+              <sc-for list="{{ t.q }}" as="c" hint-placeholder-count="4">
+                <div style="{{ c.st }}"></div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 22px; margin-top: 20px">
+          <div style="display: flex; align-items: center; gap: 9px">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1.5px; width: 22px; height: 22px; border-radius: 5px; overflow: hidden">
+              <div style="background: #E8853C"></div><div style="background: #E8853C"></div>
+              <div style="background: #E8853C"></div><div style="background: #E8853C"></div>
+            </div>
+            <span style="font-size: 13px; color: #6B615A">all four on file</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 9px">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1.5px; width: 22px; height: 22px; border-radius: 5px; overflow: hidden">
+              <div style="background: #E8853C"></div><div style="background: #F1EBE2"></div>
+              <div style="background: #F1EBE2"></div><div style="background: #F1EBE2"></div>
+            </div>
+            <span style="font-size: 13px; color: #6B615A">cognitive screen only</span>
+          </div>
+          <div style="font-size: 12.5px; color: #A79C93">quadrants, clockwise from top-left: cognitive &middot; comorbidity &middot; blood &middot; MRI</div>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 18px; min-width: 0">
+
+        <div style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 20px; padding: 22px 24px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 16px 34px -24px rgba(42,35,32,0.24)">
+          <div class="lbl">Coverage by modality</div>
+          <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 17px">
+            <sc-for list="{{ bars }}" as="b" hint-placeholder-count="4">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline">
+                  <span style="font-size: 13.5px; font-weight: 600">{{ b.name }}</span>
+                  <span class="dsp num" style="font-size: 15px; font-weight: 700; color: {{ b.color }}">{{ b.pct }}</span>
+                </div>
+                <div style="height: 8px; border-radius: 999px; background: #F1EBE2; margin-top: 7px; overflow: hidden">
+                  <div style="height: 8px; border-radius: 999px; width: {{ b.pct }}; background: {{ b.color }}"></div>
+                </div>
+                <div style="font-size: 11.8px; color: #9A8F86; margin-top: 5px">{{ b.fields }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 20px; padding: 22px 24px 24px 24px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 16px 34px -24px rgba(42,35,32,0.24)">
+          <div class="lbl">Who a complete-case model would reach</div>
+          <div style="display: flex; flex-direction: column; gap: 11px; margin-top: 17px">
+            <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 14px">
+                <div style="width: 152px; flex-shrink: 0; font-size: 13px; color: #6B615A; line-height: 1.35">{{ f.name }}</div>
+                <div style="flex-grow: 1; height: 30px; border-radius: 8px; background: #F5F1EA; position: relative; overflow: hidden">
+                  <div style="position: absolute; left: 0; top: 0; bottom: 0; width: {{ f.w }}; background: {{ f.color }}; border-radius: 8px"></div>
+                </div>
+                <div class="dsp num" style="width: 48px; flex-shrink: 0; text-align: right; font-size: 17px; font-weight: 700; color: {{ f.color }}">{{ f.n }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top: 16px; padding: 13px 15px; background: #FDF3E3; border-radius: 13px; font-size: 12.8px; color: #74551F; line-height: 1.5">HistGradientBoosting ingests NaN natively, so no row is imputed and no patient is dropped. Confidence, not coverage, is what narrows when a record is thin — and the queue says so out loud.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 0; margin-top: 28px; border-top: 1px solid #EBE4DA; padding-top: 22px">
+      <sc-for list="{{ stats }}" as="k" hint-placeholder-count="4">
+        <div style="flex-grow: 1">
+          <div class="lbl">{{ k.label }}</div>
+          <div class="dsp num" style="font-size: 32px; font-weight: 700; letter-spacing: -0.032em; margin-top: 7px; color: {{ k.color }}">{{ k.value }}</div>
+          <div style="font-size: 12.4px; color: #8C817A; margin-top: 4px">{{ k.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#E8853C","options":["#E8853C","#C9532F","#2C7A9E","#4E8A62"],"section":"Theme"}}'>
+class Component extends DCLogic {
+
+  cohort() {
+    if (this._c) return this._c;
+    var s = 42 >>> 0;
+    var rnd = function () {
+      s = (s + 0x6D2B79F5) >>> 0;
+      var t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    var pts = [];
+    for (var i = 0; i < 400; i++) {
+      var hasCom = rnd() < 0.60;
+      var hasBlood = rnd() < 0.20;
+      var hasMri = rnd() < 0.35;
+      pts.push({ hasCom: hasCom, hasBlood: hasBlood, hasMri: hasMri,
+                 n: 1 + (hasCom ? 1 : 0) + (hasBlood ? 1 : 0) + (hasMri ? 1 : 0) });
+    }
+    this._c = pts;
+    return pts;
+  }
+
+  renderVals() {
+    var accent = this.props.accent || '#E8853C';
+    var pts = this.cohort();
+    var n = pts.length;
+    var complete = pts.filter(function (x) { return x.n === 4; }).length;
+    var incomplete = n - complete;
+
+    var on = 'background: ' + accent;
+    var off = 'background: #F1EBE2';
+    var tiles = pts.map(function (x) {
+      return { q: [{ st: on }, { st: x.hasCom ? on : off },
+                   { st: x.hasMri ? on : off }, { st: x.hasBlood ? on : off }] };
+    });
+
+    var share = function (f) { return Math.round(pts.filter(f).length / n * 100) + '%'; };
+    var bars = [
+      { name: 'Cognitive screen', pct: '100%', color: accent,
+        fields: 'MMSE, age, education, SES, sex — the screening layer' },
+      { name: 'Comorbidity', pct: share(function (x) { return x.hasCom; }), color: '#C9803C',
+        fields: 'hypertension, diabetes, APOE4 — simulated, seed 42' },
+      { name: 'MRI', pct: share(function (x) { return x.hasMri; }), color: '#2C7A9E',
+        fields: 'nWBV, eTIV, ASF' },
+      { name: 'Blood p-tau217', pct: share(function (x) { return x.hasBlood; }), color: '#7C5BA8',
+        fields: 'value present only where the test was already done — simulated' }
+    ];
+
+    var funnel = [
+      { name: 'Screened this month', n: String(n), w: '100%', color: accent },
+      { name: 'Scored by this engine', n: String(n), w: '100%', color: '#4E8A62' },
+      { name: 'Scored by a complete-case model', n: String(complete),
+        w: (complete / n * 100).toFixed(1) + '%', color: '#A79C93' }
+    ];
+
+    var stats = [
+      { label: 'Patients screened', value: String(n), color: '#2A2320', sub: 'synthetic cohort, seed 42' },
+      { label: 'Incomplete records', value: String(incomplete), color: accent, sub: (Math.round(incomplete / n * 100)) + '% of the cohort' },
+      { label: 'Complete rows', value: String(complete), color: '#8C817A', sub: 'all four modality blocks present' },
+      { label: 'Patients dropped', value: '0', color: '#4E8A62', sub: 'NaN-native model, nothing imputed' }
+    ];
+
+    return { s: { complete: complete, incomplete: incomplete, n: n },
+             tiles: tiles, bars: bars, funnel: funnel, stats: stats };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "Triage console", "x": 0, "y": 0, "w": 1440, "h": 2620 },
+    { "file": "FlipPanel.dc.html", "title": "Deck figure — decision flip", "x": 1560, "y": 0, "w": 1120, "h": 1360 },
+    { "file": "Coverage.dc.html", "title": "Deck figure — modality coverage", "x": 1560, "y": 1480, "w": 1120, "h": 1220 }
+  ],
+  "annotations": [
+    {
+      "id": "note-console",
+      "x": 0,
+      "y": -150,
+      "w": 460,
+      "text": "The single screen, as it will be recorded.\nDrag the capacity sliders in the left rail — every metric, the queue order and the equity guard recompute live."
+    },
+    {
+      "id": "note-figures",
+      "x": 1560,
+      "y": -150,
+      "w": 460,
+      "text": "Standalone figures for the deck.\nDrag the pre-test risk slider to 0.90 to land the money-shot: blood and MRI grey out, PET is the only test that can change the plan."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

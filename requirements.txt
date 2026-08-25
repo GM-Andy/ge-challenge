@@ -1,0 +1,10 @@
+streamlit
+pandas
+numpy
+scikit-learn
+matplotlib
+
+# Optional. Opt in from the sidebar; supplies the point estimate only.
+# 2.0.x breaks on scikit-learn >= 1.6; >= 8.0 needs an interactive licence key.
+# Installing this downgrades scikit-learn to 1.6.1.
+# tabpfn==2.2.1

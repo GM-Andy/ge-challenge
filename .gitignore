@@ -1,0 +1,11 @@
+# OASIS-2 data is not redistributed here — see README for how to fetch it.
+oasis_longitudinal.csv
+oasis_cross-sectional.csv
+
+# Generated canvas bundle (~2 MB); rebuild from design/*.dc.html
+design/alzheimers-triage-engine.html
+
+__pycache__/
+*.pyc
+.venv/
+.streamlit/

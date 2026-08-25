@@ -1,0 +1,242 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap');
+    body { margin: 0; background: #FAF7F2; color: #2A2320;
+           font-family: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+           -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+    a { color: #C06A22; text-decoration: none; }
+    a:hover { color: #965014; }
+    .dsp { font-family: 'Outfit', system-ui, -apple-system, sans-serif; }
+    .num { font-variant-numeric: tabular-nums; }
+    .lbl { font-size: 12px; font-weight: 600; letter-spacing: 0.09em;
+           text-transform: uppercase; color: #9A8F86; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 5px;
+      border-radius: 999px; background: #E7DFD4; outline: none; margin: 0; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none;
+      width: 26px; height: 26px; border-radius: 999px; background: #FFFFFF;
+      border: 2px solid #E8853C; box-shadow: 0 2px 6px rgba(42,35,32,0.20); cursor: pointer; }
+    input[type=range]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 999px;
+      background: #FFFFFF; border: 2px solid #E8853C;
+      box-shadow: 0 2px 6px rgba(42,35,32,0.20); cursor: pointer; }
+  </style>
+</helmet>
+
+<div style="padding: 46px 52px 48px 52px; position: relative; overflow: hidden; min-height: 100%">
+  <div style="position: absolute; top: -170px; right: -120px; width: 470px; height: 470px; border-radius: 999px; background: radial-gradient(circle at 50% 50%, rgba(232,133,60,0.14), rgba(232,133,60,0) 68%); pointer-events: none"></div>
+
+  <div style="position: relative">
+    <div class="lbl">Decision-flip engine</div>
+    <h1 class="dsp" style="margin: 10px 0 0 0; font-size: 40px; font-weight: 700; letter-spacing: -0.032em; line-height: 1.08">A test is worth ordering<br>only if it can change the plan</h1>
+    <p style="margin: 14px 0 0 0; font-size: 15.5px; color: #6B615A; max-width: 700px; line-height: 1.55">Update the patient's risk under both possible results. If a positive and a negative land on the <strong>same</strong> side of the escalation threshold &theta;, the result cannot move the decision — so the test is spend and delay, bought for nothing.</p>
+
+    <div style="display: flex; align-items: center; gap: 28px; margin-top: 34px; padding: 22px 26px; background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 20px; box-shadow: 0 1px 2px rgba(42,35,32,0.04), 0 16px 34px -24px rgba(42,35,32,0.24)">
+      <div style="flex-shrink: 0">
+        <div class="lbl">Pre-test risk</div>
+        <div class="dsp num" style="font-size: 40px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; margin-top: 4px; color: #E8853C">{{ priorStr }}</div>
+      </div>
+      <div style="flex-grow: 1">
+        <input type="range" min="0.02" max="0.97" step="0.01" value="{{ prior }}" onChange="{{ setPrior }}">
+        <div style="display: flex; justify-content: space-between; margin-top: 10px">
+          <span class="num" style="font-size: 12px; color: #A79C93">0.02</span>
+          <span style="font-size: 12.5px; color: #8C817A">drag to watch the recommendation change</span>
+          <span class="num" style="font-size: 12px; color: #A79C93">0.97</span>
+        </div>
+      </div>
+      <div style="width: 1px; height: 58px; background: #E7DFD4; flex-shrink: 0"></div>
+      <div style="flex-shrink: 0; text-align: right; width: 246px">
+        <div class="lbl">Recommended action</div>
+        <div style="margin-top: 8px"><span style="{{ verdictSt }}">{{ verdict }}</span></div>
+      </div>
+    </div>
+
+    <div style="margin: 34px 0 0 168px; position: relative; height: 24px">
+      <div style="position: absolute; left: {{ thetaPct }}; top: 0; transform: translateX(-50%); font-size: 13.5px; font-weight: 700; color: #C9532F; white-space: nowrap">&theta; = {{ thetaStr }} &middot; escalate above this line</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 8px">
+      <sc-for list="{{ rows }}" as="t" hint-placeholder-count="3">
+        <div style="{{ t.rowSt }}">
+          <div style="width: 152px; flex-shrink: 0; padding-right: 18px">
+            <div class="dsp" style="font-size: 17px; font-weight: 600; letter-spacing: -0.012em; color: {{ t.nameColor }}">{{ t.name }}</div>
+            <div class="num" style="font-size: 12.5px; color: #9A8F86; margin-top: 4px">{{ t.meta }}</div>
+          </div>
+
+          <div style="flex-grow: 1; position: relative; height: 74px">
+            <div style="position: absolute; left: 0; right: 0; top: 36px; height: 2px; background: #EFE9E0; border-radius: 999px"></div>
+            <div style="position: absolute; left: {{ thetaPct }}; top: 6px; bottom: 6px; width: 2px; background: #C9532F; opacity: 0.55"></div>
+            <div style="position: absolute; left: {{ t.barLeft }}; width: {{ t.barWidth }}; top: 32px; height: 10px; border-radius: 999px; background: {{ t.barColor }}"></div>
+
+            <div style="position: absolute; left: {{ t.negLeft }}; top: 26px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center">
+              <div style="width: 22px; height: 22px; border-radius: 999px; background: #FFFFFF; border: 4px solid {{ t.fg }}"></div>
+              <div class="num" style="font-size: 13.5px; font-weight: 700; color: {{ t.fg }}; margin-top: 7px; white-space: nowrap">{{ t.negLabel }}</div>
+            </div>
+            <div style="position: absolute; left: {{ t.posLeft }}; top: 26px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center">
+              <div style="width: 22px; height: 22px; border-radius: 999px; background: {{ t.fg }}; border: 4px solid {{ t.fg }}"></div>
+              <div class="num" style="font-size: 13.5px; font-weight: 700; color: {{ t.fg }}; margin-top: 7px; white-space: nowrap">{{ t.posLabel }}</div>
+            </div>
+            <div style="position: absolute; left: {{ nowLeft }}; top: 2px; transform: translateX(-50%); width: 2px; height: 26px; background: #E8853C"></div>
+          </div>
+
+          <div style="width: 234px; flex-shrink: 0; padding-left: 20px; text-align: right">
+            <span style="{{ t.badgeSt }}">{{ t.badge }}</span>
+            <div style="font-size: 12.4px; color: #9A8F86; margin-top: 7px; line-height: 1.42">{{ t.note }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 26px; margin-top: 22px; padding-top: 18px; border-top: 1px solid #EBE4DA">
+      <div style="display: flex; align-items: center; gap: 9px">
+        <div style="width: 16px; height: 16px; border-radius: 999px; background: #FFFFFF; border: 4px solid #6B615A"></div>
+        <span style="font-size: 13px; color: #6B615A">risk if negative</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px">
+        <div style="width: 16px; height: 16px; border-radius: 999px; background: #6B615A"></div>
+        <span style="font-size: 13px; color: #6B615A">risk if positive</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px">
+        <div style="width: 2px; height: 16px; background: #E8853C"></div>
+        <span style="font-size: 13px; color: #6B615A">pre-test risk</span>
+      </div>
+      <div style="margin-left: auto; font-size: 12.5px; color: #8C817A">Sensitivity / specificity from published literature. Costs are Indian private-sector list prices.</div>
+    </div>
+
+    <div style="margin-top: 30px; background: #FFFFFF; border: 1px solid #EBE4DA; border-radius: 20px; padding: 24px 28px 26px 28px">
+      <h2 class="dsp" style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.016em">Startup self-check</h2>
+      <p style="margin: 7px 0 0 0; font-size: 13.2px; color: #6B615A">The engine prints this table to the console on boot. The <strong style="color: #C9532F">0.90</strong> row is the one to watch: a blood test on a 90% patient cannot change the plan, so ordering one burns ₹8,000 and three days.</p>
+
+      <div style="display: grid; grid-template-columns: 88px repeat(3, 118px) minmax(0, 1fr); margin-top: 18px">
+        <div class="lbl" style="padding-bottom: 11px">Prior</div>
+        <div class="lbl" style="padding-bottom: 11px; text-align: center">Blood</div>
+        <div class="lbl" style="padding-bottom: 11px; text-align: center">MRI</div>
+        <div class="lbl" style="padding-bottom: 11px; text-align: center">PET</div>
+        <div class="lbl" style="padding-bottom: 11px; padding-left: 22px">Resulting action</div>
+
+        <sc-for list="{{ table }}" as="r" hint-placeholder-count="6">
+          <div class="dsp num" style="{{ r.cellSt }}; font-size: 16px; font-weight: 700">{{ r.prior }}</div>
+          <div style="{{ r.cellSt }}; text-align: center"><span style="{{ r.bSt }}">{{ r.b }}</span></div>
+          <div style="{{ r.cellSt }}; text-align: center"><span style="{{ r.mSt }}">{{ r.m }}</span></div>
+          <div style="{{ r.cellSt }}; text-align: center"><span style="{{ r.pSt }}">{{ r.p }}</span></div>
+          <div style="{{ r.cellSt }}; padding-left: 22px; font-size: 13.4px; color: #6B615A">{{ r.act }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"theta":{"editor":"range","default":0.4,"min":0.05,"max":0.95,"step":0.05,"section":"Engine"}}'>
+class Component extends DCLogic {
+
+  tests() {
+    return [
+      { key: 'blood', name: 'Blood p-tau217', sens: 0.90, spec: 0.90, cost: 8000, days: 3 },
+      { key: 'mri', name: 'Structural MRI', sens: 0.85, spec: 0.70, cost: 12000, days: 14 },
+      { key: 'pet', name: 'Amyloid PET', sens: 0.95, spec: 0.95, cost: 60000, days: 30 }
+    ];
+  }
+
+  evalTest(p, t, theta) {
+    var lrPos = t.sens / (1 - t.spec);
+    var lrNeg = (1 - t.sens) / t.spec;
+    var o = p / (1 - p);
+    var pp = (o * lrPos) / (1 + o * lrPos);
+    var pn = (o * lrNeg) / (1 + o * lrNeg);
+    return { pp: pp, pn: pn, flips: (pp >= theta) !== (pn >= theta) };
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var theta = this.props.theta == null ? 0.4 : this.props.theta;
+    var prior = st.prior == null ? 0.90 : st.prior;
+    var ts = this.tests();
+
+    var rows = ts.map(function (t) {
+      var e = self.evalTest(prior, t, theta);
+      var lo = Math.min(e.pn, e.pp), hi = Math.max(e.pn, e.pp);
+      return {
+        name: t.name,
+        meta: '₹' + t.cost.toLocaleString('en-IN') + ' · ' + t.days + ' days',
+        nameColor: e.flips ? '#2A2320' : '#A79C93',
+        fg: e.flips ? '#1F5E7D' : '#A79C93',
+        rowSt: 'display: flex; align-items: center; padding: 16px 22px; border-radius: 18px; border: 1px solid ' +
+               (e.flips ? '#CBE0EC' : '#F0EAE1') + '; background: ' + (e.flips ? '#F5FAFD' : '#FCFAF7') +
+               '; opacity: ' + (e.flips ? '1' : '0.7'),
+        barLeft: (lo * 100).toFixed(2) + '%',
+        barWidth: ((hi - lo) * 100).toFixed(2) + '%',
+        barColor: e.flips ? '#BCDCEC' : '#EAE3D9',
+        negLeft: (e.pn * 100).toFixed(2) + '%',
+        posLeft: (e.pp * 100).toFixed(2) + '%',
+        negLabel: e.pn.toFixed(2),
+        posLabel: e.pp.toFixed(2),
+        badge: e.flips ? 'This test decides' : 'Cannot change decision',
+        badgeSt: 'display: inline-block; padding: 6px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: ' +
+                 (e.flips ? '#1F5E7D' : '#8B8178') + '; background: ' + (e.flips ? '#E9F2F7' : '#F1EDE7'),
+        note: e.flips
+          ? 'either result crosses θ and changes the next step'
+          : 'both outcomes stay on one side of θ — ₹' + t.cost.toLocaleString('en-IN') + ' and ' + t.days + ' days buy nothing'
+      };
+    });
+
+    var anyFlip = rows.filter(function (r) { return r.badge === 'This test decides'; }).length > 0;
+    var cheapest = ts.filter(function (t) { return self.evalTest(prior, t, theta).flips; })
+                     .sort(function (a, b) { return a.cost - b.cost; })[0];
+    var verdict, vfg, vbg;
+    if (!anyFlip && prior >= theta) { verdict = 'Escalate now'; vfg = '#A8401F'; vbg = '#FBEDE7'; }
+    else if (!anyFlip) { verdict = 'Re-screen in 12 months'; vfg = '#37624A'; vbg = '#EDF4EF'; }
+    else { verdict = 'Order ' + cheapest.name.toLowerCase(); vfg = '#1F5E7D'; vbg = '#E9F2F7'; }
+
+    var chip = function (flips) {
+      return flips
+        ? 'display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #1F5E7D; background: #E9F2F7'
+        : 'display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #A79C93; background: #F5F1EA';
+    };
+    var acts = {
+      '0.03': 'Release to monitoring — test nothing',
+      '0.10': 'Blood only — MRI cannot decide here',
+      '0.25': 'Cheapest flipping test wins',
+      '0.55': 'Cheapest flipping test wins',
+      '0.90': 'Skip blood and MRI, straight to PET',
+      '0.95': 'Escalate — testing adds nothing'
+    };
+    var table = ['0.03', '0.10', '0.25', '0.55', '0.90', '0.95'].map(function (ps, i) {
+      var p = Number(ps);
+      var b = self.evalTest(p, ts[0], 0.4).flips;
+      var m = self.evalTest(p, ts[1], 0.4).flips;
+      var pe = self.evalTest(p, ts[2], 0.4).flips;
+      var hot = ps === '0.90';
+      return {
+        prior: ps,
+        b: b ? 'FLIP' : 'none', m: m ? 'FLIP' : 'none', p: pe ? 'FLIP' : 'none',
+        bSt: chip(b), mSt: chip(m), pSt: chip(pe),
+        act: acts[ps],
+        cellSt: 'padding: 11px 0; border-top: 1px solid #F0EAE1; ' + (hot ? 'background: #FDF3E3' : '')
+      };
+    });
+
+    return {
+      prior: prior,
+      priorStr: prior.toFixed(2),
+      nowLeft: (prior * 100).toFixed(1) + '%',
+      thetaStr: theta.toFixed(2),
+      thetaPct: (theta * 100).toFixed(1) + '%',
+      rows: rows,
+      verdict: verdict,
+      verdictSt: 'display: inline-block; padding: 8px 16px; border-radius: 999px; font-size: 14.5px; font-weight: 700; color: ' + vfg + '; background: ' + vbg,
+      table: table,
+      setPrior: function (e) { self.setState({ prior: Number(e.target.value) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
