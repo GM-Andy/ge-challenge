@@ -41,6 +41,62 @@ prior   blood    mri      pet      resulting action
 
 The **0.90 row** is the point: a blood test on a 90% patient cannot change the plan, so ordering one wastes ₹8,000 and three days.
 
+## V2 — staged cohort, tiers, stages, explanations
+
+The engine now lives in `engine.py` (importable, no Streamlit) and the UI in `app.py`.
+
+**The cohort was rebuilt, and this is the change that makes the demo work.** Previously one risk distribution was drawn for everyone, so almost all patients landed in the same action bucket. Now patients **arrive at different stages with different workup already done**:
+
+```
+stage 1 (60%)  cognitive screening only
+stage 2 (28%)  cognitive + blood biomarker already resulted
+stage 3 (12%)  cognitive + blood + MRI already resulted
+```
+
+Every patient starts with a cognitive prior, then receives a likelihood-ratio update for each test **already completed** — so a stage-3 patient has a much sharper posterior than a stage-1 patient. Only tests the patient has **not** already had are offered.
+
+Startup self-check, N=1000, seed 42, against the reference numbers in the build spec:
+
+| Action | Spec | This build |
+|---|---|---|
+| `RELEASE_12MO` | 208 (20.8%) | 219 (21.9%) |
+| `ORDER_BLOOD_PTAU217` | 551 (55.1%) | 503 (50.3%) |
+| `ORDER_MRI` | 42 (4.2%) | 49 (4.9%) |
+| `ORDER_PET` | 190 (19.0%) | 204 (20.4%) |
+| `ESCALATE_NOW` | 9 (0.9%) | 3 + 22 eligibility (2.5%) |
+
+Every row lands within ~5 points. The escalate row splits because V2 adds the therapy-eligibility action, which the reference table predates.
+
+### The "45% of PET slots are wasted" figure does not reproduce as a constant
+
+The spec reports 9/20 (45%) of risk-ranked PET slots being non-decisive. Measured here it is **capacity- and cohort-dependent, not a fixed number**:
+
+| Cohort | PET slots | Risk-ranked slots that cannot change the action |
+|---|---|---|
+| Synthetic, N=1000 | 20 | **20 / 20 (100%)** |
+| OASIS-2, N=150 | 20 | **1 / 20 (5%)** |
+
+The reason is arithmetic. PET stops being decisive above p ≈ 0.927. The synthetic cohort has 25 patients above that line, so any 20 slots filled from the top of the risk list are *all* non-decisive. The 150-patient OASIS cohort has barely any, so almost none are. Push the synthetic cohort to 60 PET slots and it lands near 42%, close to the spec's number.
+
+The claim that survives is the directional one, and it holds in every configuration: **flip-filtering sends zero non-decisive PET scans, by construction.** The app reports the live percentage for whatever cohort and capacity is loaded rather than hard-coding 45%.
+
+### What V2 adds
+
+- **Priority tiers** — HIGH (`p − u ≥ θ`), LOW (`p + u < θ`), MEDIUM (band straddles θ), shown as a chip on every row with the cohort split in the header.
+- **Stage tracker** — a 4-segment indicator per patient (Cognitive → Blood → MRI → PET), plus a cohort funnel by stage.
+- **Treatment-eligibility flag** — MMSE 20–28 with a high posterior. PET stays recommended for these patients even where it cannot change the triage action, because eligibility confirmation is a separate clinical purpose. The reason is printed in the row rather than hidden.
+- **Contributing factors** — top 5 drivers with direction and magnitude, in clinical language, plus a counterfactual line ("MMSE of 26 or above would move this patient to the LOW tier"). Global importance via `permutation_importance`; local attribution by substituting the cohort median for one feature and measuring how far the prediction moves.
+- **Provenance panel** — per-modality source, real-vs-simulated status, the synthetic-surrogate identifier statement, and the MoCA-in-place-of-MMSE note.
+- **Reference architecture** tab, exported as `architecture.png`.
+- **Demo mode** — pins three real patients (hero / beneficiary / invisible) with plain-English captions. On by default; `?demo=0` turns it off.
+- **Live deltas** — the capacity slider reports patients entering the plan and patients deferred, against the default capacity.
+
+### Two places where the copy and the engine disagreed, and how it was settled
+
+**Tier versus flip.** The spec's line is "Medium tier is where testing changes decisions. High and low are already decided." That is *mostly* true but not strictly: a LOW-tier stage-3 patient at p = 0.25 can still be top of the PET queue, because a positive PET moves them to 0.86 and a negative to 0.02 — the test genuinely decides. Tier answers "is today's estimate confidently one side of θ?"; the flip rule answers "could a result still cross it?". The app now says both, rather than letting the first queue row contradict the caption.
+
+**Clinician review.** An earlier draft routed the top uncertainty decile to `CLINICIAN_REVIEW`. Because uncertainty peaks at p ≈ 0.5, that diverted exactly the patients a cheap blood test helps most, and it fired on a mechanical 10.0% of the cohort. It now fires only when no available test flips **and** the patient has cognitive data only **and** the band still crosses θ — the case where releasing someone for a year on thin data should be a human's call.
+
 ### …but that case does not occur in this cohort
 
 Worth knowing before you demo it. Because the CDR label is circular (below), the model is strongly **bimodal** — 56 of 150 patients sit below 0.10 and 44 sit above 0.94:
