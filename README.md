@@ -71,10 +71,13 @@ Every row lands within ~5 points. The escalate row splits because V2 adds the th
 
 The spec reports 9/20 (45%) of risk-ranked PET slots being non-decisive. Measured here it is **capacity- and cohort-dependent, not a fixed number**:
 
-| Cohort | PET slots | Risk-ranked slots that cannot change the action |
-|---|---|---|
-| Synthetic, N=1000 | 20 | **20 / 20 (100%)** |
-| OASIS-2, N=150 | 20 | **1 / 20 (5%)** |
+| Cohort | PET slots | Non-decisive, risk-ranked | Mean posterior: risk-ranked vs flip-filtered |
+|---|---|---|---|
+| Spec reference | 20 | 9 / 20 (45%) | 0.92 vs 0.50 |
+| Synthetic, N=1000 | 20 | **20 / 20 (100%)** | **0.95 vs 0.61** |
+| OASIS-2, N=150 | 20 | **1 / 20 (5%)** | **0.65 vs 0.34** |
+
+The mean-posterior gap is the robust part: risk-ranking always sends the scanner the patients whose posterior is already highest, flip-filtering always sends a materially lower-posterior group, and the gap is wide in both cohorts (0.34 and 0.31 against the spec's 0.42).
 
 The reason is arithmetic. PET stops being decisive above p ≈ 0.927. The synthetic cohort has 25 patients above that line, so any 20 slots filled from the top of the risk list are *all* non-decisive. The 150-patient OASIS cohort has barely any, so almost none are. Push the synthetic cohort to 60 PET slots and it lands near 42%, close to the spec's number.
 
