@@ -46,60 +46,115 @@ TIER_STYLE = {                      # ink / grass / sand — no rainbow semantic
     "MEDIUM": (INK, GRASS),
     "LOW":    (STONE, SAND),
 }
+# The system forbids a rainbow of semantic states, so actions are coded
+# tonally: green = something happens, solid ink = escalate, hollow = nothing
+# ordered. One chromatic accent, never more.
 ACTION_DOT = {
-    Action.ORDER_BLOOD_PTAU217: SKY,
-    Action.ORDER_MRI: SKY,
-    Action.ORDER_PET: CORAL,
-    Action.ESCALATE_NOW: CORAL,
-    Action.ESCALATE_NOW_PET_ELIGIBILITY: CORAL,
-    Action.RELEASE_12MO: GRASS,
-    Action.CLINICIAN_REVIEW: SUN,
-    Action.DEFERRED_NEXT_MONTH: MIST,
+    Action.ORDER_BLOOD_PTAU217: ("fill", GRASS),
+    Action.ORDER_MRI: ("fill", GRASS),
+    Action.ORDER_PET: ("fill", GRASS),
+    Action.ESCALATE_NOW: ("fill", INK),
+    Action.ESCALATE_NOW_PET_ELIGIBILITY: ("fill", INK),
+    Action.RELEASE_12MO: ("hollow", INK),
+    Action.CLINICIAN_REVIEW: ("hollow", INK),
+    Action.DEFERRED_NEXT_MONTH: ("hollow", STONE),
 }
 
 CSS = f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+
+/* ── canvas: cream is structural, white is elevation, never a shadow ── */
 .stApp {{ background: {CREAM}; }}
-html, body, [class*="css"] {{ font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+html, body, [class*="css"], p, div, span, td, th, li {{
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   color: {INK}; }}
 h1,h2,h3,h4 {{ font-family: 'Inter', sans-serif !important; font-weight: 500 !important;
-  color: {INK} !important; }}
+  color: {INK} !important; letter-spacing: -0.02em; }}
 #MainMenu, footer, header {{ visibility: hidden; }}
-.block-container {{ padding: 1.4rem 2.4rem 4rem 2.4rem; max-width: 1500px; }}
-section[data-testid="stSidebar"] {{ background: {WHITE}; border-right: 1px solid {MIST}; }}
+.block-container {{ padding: 0.6rem 1.2rem 3rem 1.2rem; max-width: 1200px; }}
+section[data-testid="stSidebar"] {{ background: {WHITE};
+  border-right: 1px solid {MIST}; }}
+section[data-testid="stSidebar"] .block-container {{ padding-top: 1.2rem; }}
 
-.hero h1 {{ font-size: 64px; font-weight: 500; letter-spacing: -3.8px;
-  line-height: 0.98; margin: 0; }}
-.hero p {{ font-size: 20px; line-height: 1.35; color: {INK}; margin: 14px 0 0 0;
-  max-width: 760px; }}
+/* ── floating pill navigation ── */
+.navpill {{ background:{WHITE}; border-radius:50px; padding:11px 14px 11px 14px;
+  display:flex; align-items:center; gap:18px; margin:6px 0 60px 0; }}
+.navmark {{ width:40px; height:40px; border-radius:12px; background:{GRASS};
+  flex-shrink:0; }}
+.navword {{ font-size:17px; font-weight:500; line-height:1.15; }}
+.navword span {{ display:block; font-size:15px; color:{STONE}; font-weight:400; }}
+.navlink {{ font-size:15px; font-weight:500; padding:0 18px; color:{INK}; }}
+.navdot {{ width:40px; height:40px; border-radius:50px; background:{GRASS};
+  margin-left:auto; flex-shrink:0; display:flex; align-items:center;
+  justify-content:center; }}
 
-.card {{ background: {WHITE}; border-radius: 50px; padding: 26px 30px;
-  margin-bottom: 20px; }}
-.card-tight {{ background: {WHITE}; border-radius: 34px; padding: 20px 22px; }}
-.stat {{ background: {WHITE}; border-radius: 50px; padding: 22px 26px; }}
-.stat .k {{ font-size: 15px; color: {STONE}; }}
-.stat .v {{ font-size: 53px; font-weight: 500; letter-spacing: -2.12px;
-  line-height: 1.05; margin-top: 4px; }}
-.stat .s {{ font-size: 15px; color: {STONE}; margin-top: 6px; line-height: 1.4; }}
+/* ── hero: the signature scale ── */
+.hero {{ margin-bottom: 44px; }}
+.hero h1 {{ font-size:81px; font-weight:500; letter-spacing:-4.86px;
+  line-height:1.02; margin:0; }}
+.hero p {{ font-size:20px; line-height:1.25; color:{INK}; margin:22px 0 0 0;
+  max-width:760px; font-weight:400; }}
 
-.chip {{ display:inline-block; padding:5px 14px; border-radius:50px;
+/* ── surfaces ── */
+.card {{ background:{WHITE}; border-radius:50px; padding:30px 34px;
+  margin-bottom:22px; }}
+.card-tight {{ background:{CREAM}; border-radius:50px; padding:21px 24px; }}
+.stat {{ background:{WHITE}; border-radius:50px; padding:26px 28px; height:100%; }}
+.stat .k {{ font-size:15px; color:{STONE}; line-height:1.5; }}
+.stat .v {{ font-size:53px; font-weight:500; letter-spacing:-2.12px;
+  line-height:1.15; margin-top:6px; }}
+.stat .s {{ font-size:15px; color:{STONE}; margin-top:8px; line-height:1.5; }}
+
+/* ── inline micro-elements: 10px, per the system ── */
+.chip {{ display:inline-block; padding:4px 12px; border-radius:10px;
   font-size:15px; font-weight:500; white-space:nowrap; }}
-.tag {{ display:inline-block; padding:3px 11px; border-radius:10px;
-  font-size:15px; border:1px solid {MIST}; color:{STONE}; }}
 .qt {{ width:100%; border-collapse:collapse; }}
 .qt th {{ font-size:15px; color:{STONE}; text-align:left; font-weight:400;
-  padding:0 12px 12px 12px; }}
-.qt td {{ padding:14px 12px; border-top:1px solid {MIST}; font-size:15px;
-  vertical-align:middle; }}
-.stButton>button {{ border-radius:50px; border:1px solid {INK}; background:{WHITE};
-  color:{INK}; font-weight:500; padding:11px 22px; font-size:15px; }}
-.stButton>button:hover {{ border-color:{GRASS}; color:{INK}; }}
-.note {{ background:{SAND}; border-radius:34px; padding:18px 22px; font-size:15px;
+  padding:0 10px 14px 10px; }}
+.qt td {{ padding:15px 10px; border-top:1px solid {MIST}; font-size:15px;
+  vertical-align:middle; line-height:1.5; }}
+
+/* ── buttons: light ghost pills with a single chromatic dot ── */
+.stButton>button {{ border-radius:50px; border:1px solid {MIST}; background:{WHITE};
+  color:{INK}; font-weight:500; padding:11px 20px; font-size:15px; }}
+.stButton>button:hover {{ border-color:{INK}; color:{INK}; background:{WHITE}; }}
+.stButton>button:focus {{ box-shadow:none !important; color:{INK} !important; }}
+
+.note {{ background:{SAND}; border-radius:50px; padding:21px 26px; font-size:15px;
   line-height:1.5; }}
-.band {{ background:{SUN}; border-radius:34px; padding:18px 22px; font-size:15px;
+.band {{ background:{SUN}; border-radius:50px; padding:21px 26px; font-size:15px;
   line-height:1.5; }}
+.footerband {{ background:{SUN}; border-radius:50px; padding:44px 48px;
+  margin-top:72px; }}
+.footerband .big {{ font-size:53px; font-weight:500; letter-spacing:-2.12px;
+  line-height:1.15; }}
+.footerband .sub {{ font-size:18px; line-height:1.5; margin-top:12px;
+  max-width:820px; }}
+
+/* ── tabs read as nav links, not chrome ── */
+.stTabs [data-baseweb="tab-list"] {{ gap:6px; background:transparent;
+  border-bottom:1px solid {MIST}; }}
+.stTabs [data-baseweb="tab"] {{ font-size:15px; font-weight:500; color:{STONE};
+  background:transparent; border-radius:10px 10px 0 0; padding:10px 18px; }}
+.stTabs [aria-selected="true"] {{ color:{INK} !important; }}
+.stTabs [data-baseweb="tab-highlight"] {{ background:{GRASS}; height:3px; }}
+
+hr {{ border:none; border-top:1px solid {MIST}; margin:44px 0; }}
 </style>
+"""
+
+
+NAV = f"""
+<div class="navpill">
+  <div class="navmark"></div>
+  <div class="navword">Triage Engine<span>Alzheimer's diagnostic pathways</span></div>
+  <div class="navlink" style="margin-left:22px">Precision Care Challenge 2026</div>
+  <div class="navdot">
+    <div style="width:14px;height:2px;background:{INK};border-radius:2px;
+      box-shadow:0 -5px 0 {INK}, 0 5px 0 {INK}"></div>
+  </div>
+</div>
 """
 
 
@@ -107,10 +162,13 @@ def chip(text, fg, bg):
     return f'<span class="chip" style="color:{fg};background:{bg}">{text}</span>'
 
 
-def dot(color):
-    return (f'<span style="display:inline-block;width:9px;height:9px;'
-            f'border-radius:50px;background:{color};margin-right:8px;'
-            f'vertical-align:middle"></span>')
+def dot(spec):
+    kind, color = spec
+    fill = color if kind == "fill" else "transparent"
+    return (f'<span style="display:inline-block;width:10px;height:10px;'
+            f'border-radius:50px;background:{fill};border:1.5px solid {color};'
+            f'margin-right:9px;vertical-align:middle;box-sizing:border-box">'
+            f'</span>')
 
 
 def inr(v):
@@ -313,6 +371,49 @@ def fig_factors(facs, standalone=False):
     return fig
 
 
+def fig_capacity_curve(plan, current, standalone=False):
+    """
+    The insight that survives scrutiny: the SCARCER the PET capacity, the
+    larger the share of it that risk-ranking burns on scans that cannot
+    change the plan. Flip-filtering is flat at zero by construction.
+    """
+    slots = [10, 20, 30, 40, 60, 80, 100]
+    pct = []
+    for s in slots:
+        nv = E.naive_allocation(plan, {"pet": s, "mri": 10 ** 6,
+                                       "blood_ptau217": 10 ** 6})
+        pet = nv[nv["test"] == "pet"] if len(nv) else nv
+        pct.append(100 * float(pet["wasted"].mean()) if len(pet) else 0.0)
+
+    fig, ax = plt.subplots(figsize=(9.5, 4.4), dpi=150)
+    fig.patch.set_facecolor(WHITE)
+    _clean(ax)
+    ax.plot(slots, pct, color=INK, lw=2.6, marker="o", ms=9,
+            markerfacecolor=WHITE, markeredgewidth=2.4, zorder=3,
+            label="Rank by risk")
+    ax.plot(slots, [0] * len(slots), color=GRASS, lw=3.4, marker="o", ms=8,
+            zorder=3, label="Flip-filtered")
+    ax.axvline(current, color=CORAL, lw=1.8, ls=(0, (4, 3)), zorder=2)
+    ax.text(current, 106, f"you are here\n{current} slots", ha="center",
+            fontsize=13, color=CORAL, linespacing=1.4, zorder=6,
+            bbox=dict(facecolor=WHITE, edgecolor="none", pad=3))
+
+    ax.set_ylim(-6, 118)
+    ax.set_yticks([0, 25, 50, 75, 100])
+    ax.set_yticklabels(["0%", "25%", "50%", "75%", "100%"])
+    ax.set_xlabel("PET slots available per month", labelpad=10)
+    ax.set_ylabel("scans that cannot\nchange the action", labelpad=10,
+                  linespacing=1.4)
+    ax.grid(axis="y", color=MIST, lw=1)
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, fontsize=14, loc="center right")
+    if standalone:
+        fig.suptitle("The scarcer the capacity, the more risk-ranking wastes",
+                     fontsize=18, fontweight="bold", y=1.03)
+    fig.tight_layout()
+    return fig
+
+
 def fig_architecture(standalone=True):
     built_row = ["Ingest\nscreening +\nclinical records",
                  "Standardise\n& link at\npatient level",
@@ -434,9 +535,8 @@ def main():
 
         demo_mode = st.toggle("Demo mode", value=demo_default,
                               help="Pins three patients that show the key behaviours.")
-        cohort_src = st.radio("Cohort", ["OASIS-2 (real, 150)",
-                                         "Synthetic memory clinic (1000)"],
-                              index=1 if not E.CSV_PATH.exists() else 0)
+        cohort_src = st.radio("Cohort", ["Synthetic memory clinic (1000)",
+                                         "OASIS-2 (real, 150)"], index=0)
         use_real = cohort_src.startswith("OASIS")
         n = 150 if use_real else 1000
 
@@ -468,6 +568,7 @@ def main():
     d_in = int(plan["granted"].sum() - base["granted"].sum())
     d_def = int(plan["deferred"].sum() - base["deferred"].sum())
 
+    st.markdown(NAV, unsafe_allow_html=True)
     tab_main, tab_arch = st.tabs(["  Triage plan  ", "  Architecture & data  "])
 
     # ─────────────────────────── main tab ────────────────────────────────
@@ -641,6 +742,7 @@ def main():
             st.markdown('<div class="card">', unsafe_allow_html=True)
             st.markdown("#### Same PET capacity, two ways to fill it")
             st.pyplot(fig_policy(s), use_container_width=True)
+            st.pyplot(fig_capacity_curve(plan, pet), use_container_width=True)
             if s["naive_pet"]:
                 pctw = 100 * s["naive_pet_wasted"] / max(s["naive_pet"], 1)
                 st.markdown(
@@ -719,6 +821,17 @@ def main():
             unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
+    with tab_main:
+        gap = s["naive_pet_mean_p"] - s["ours_pet_mean_p"]
+        st.markdown(
+            f'<div class="footerband"><div class="big">Every scan we order '
+            f'changes a plan.</div><div class="sub">Ranking by risk sends the '
+            f'scanner patients at a mean posterior of '
+            f'{s["naive_pet_mean_p"]:.2f} — people whose plan was never in '
+            f'doubt. Flip-filtering sends {s["ours_pet_mean_p"]:.2f}, a gap of '
+            f'{gap:.2f}, and never sends a scan that cannot change the '
+            f'decision.</div></div>', unsafe_allow_html=True)
+
     # ── export ───────────────────────────────────────────────────────────
     if export:
         FIG_DIR.mkdir(exist_ok=True)
@@ -731,6 +844,7 @@ def main():
             "policy_comparison.png": fig_policy(s, True),
             "architecture.png": fig_architecture(),
             "tiers.png": fig_tiers(plan, True),
+            "capacity_curve.png": fig_capacity_curve(plan, pet, True),
             "factors.png": fig_factors(E.contributing_factors(sel, expl), True),
         }
         for name, f in figs.items():
